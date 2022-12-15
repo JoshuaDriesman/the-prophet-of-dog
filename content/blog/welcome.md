@@ -16,4 +16,4 @@ The current plan is that most of these posts will consist of a small blurb of te
 
 Without further ado, here is Eli, very tired from a visit to the dog park today, sleeping on our couch.
 
-![image of Eliyahu sleeping on couch](/img/blog-photos/12-14-2022.jpeg)
+![image of Eliyahu sleeping on couch](https://assets.theprophetofdog.com/blog-photos/12-14-2022.jpeg)
