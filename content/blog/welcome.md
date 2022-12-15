@@ -2,7 +2,7 @@
 title: 'Welcome'
 date: 2022-12-14T20:57:39-05:00
 slug: ''
-description: 'First blog post about our bichon puppy, Eliyahu!'
+description: 'Announcing our blog for our bichon puppy, Eliyahu!'
 keywords: [dog, bichon]
 draft: true
 tags: []
