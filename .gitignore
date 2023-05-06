@@ -1,7 +1,15 @@
-/public/
-/resources/_gen/
+/frontend/public/
+/frontend/resources/_gen/
 
 .DS_Store
 node_modules
 dist
 tmp
+
+.nimbella
+.deployed
+__deployer__.zip
+__pycache__/
+node_modules
+package-lock.json
+.DS_Store
