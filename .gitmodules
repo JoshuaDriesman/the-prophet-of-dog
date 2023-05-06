@@ -1,6 +1,3 @@
-[submodule "themes/hugo-theme-codex"]
-	path = themes/hugo-theme-codex
-	url = https://github.com/jakewies/hugo-theme-codex.git
 [submodule "frontend/themes/hugo-theme-codex"]
 	path = frontend/themes/hugo-theme-codex
 	url = https://github.com/jakewies/hugo-theme-codex.git
