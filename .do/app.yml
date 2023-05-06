@@ -1,0 +1,29 @@
+alerts:
+  - rule: DEPLOYMENT_FAILED
+  - rule: DOMAIN_FAILED
+domains:
+  - domain: theprophetofdog.com
+    type: PRIMARY
+    zone: theprophetofdog.com
+envs:
+  - key: HUGO_EXTENDED
+    scope: RUN_AND_BUILD_TIME
+    value: '1'
+name: the-prophet-of-dog
+region: nyc
+static_sites:
+  - build_command: hugo -d public
+    environment_slug: hugo
+    github:
+      branch: main
+      deploy_on_push: true
+      repo: JoshuaDriesman/the-prophet-of-dog
+    name: the-prophet-of-dog
+    routes:
+      - path: /
+    source_dir: /
+functions:
+  - name: hello-world
+    source_dir: ./hello-world-func
+    routes:
+      - path: /hello
