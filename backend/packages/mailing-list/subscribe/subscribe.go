@@ -12,7 +12,6 @@ type Response struct {
 }
 
 func Main(ctx context.Context, event Event) Response {
-	msg := make(map[string]interface{})
 	if event.Email == "" {
 		return Response{
 			StatusCode: 400,
