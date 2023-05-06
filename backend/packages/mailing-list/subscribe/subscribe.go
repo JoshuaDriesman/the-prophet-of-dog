@@ -1,13 +1,23 @@
 package main
 
-func Main(args map[string]interface{}) map[string]interface{} {
-	email, ok := args["email"].(string)
+import "context"
+
+type Event struct {
+	Email string `json:"email"`
+}
+
+type Response struct {
+	Body string `json:"body"`
+}
+
+func Main(ctx context.Context, event Event) Response {
 	msg := make(map[string]interface{})
-	if !ok {
+	if event.Email == "" {
 		msg["statusCode"] = 400
 		msg["body"] = "Missing email"
 	}
 
-	msg["body"] = "Subscribing " + email + "!"
-	return msg
+	return Response{
+		Body: "Subscribing " + event.Email,
+	}
 }
