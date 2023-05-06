@@ -4,6 +4,7 @@ import "context"
 
 type Event struct {
 	Email string `json:"email"`
+	Name  string `json:"name"`
 }
 
 type Response struct {
@@ -20,6 +21,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	return Response{
-		Body: "Subscribing " + event.Email,
+		StatusCode: 200,
+		Body:       "Subscribing " + event.Email,
 	}
 }
