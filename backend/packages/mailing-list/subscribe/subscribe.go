@@ -8,7 +8,7 @@ type Event struct {
 
 type Response struct {
 	Body       string `json:"body"`
-	StatusCode int 	  `json:"statusCode"`
+	StatusCode int    `json:"statusCode"`
 }
 
 func Main(ctx context.Context, event Event) Response {
@@ -16,7 +16,7 @@ func Main(ctx context.Context, event Event) Response {
 	if event.Email == "" {
 		return Response{
 			StatusCode: 400,
-			Body: "Missing email"
+			Body:       "Missing email",
 		}
 	}
 
