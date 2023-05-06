@@ -1,5 +1,5 @@
 ---
 heading: 'Eliyahu - The Prophet of Dog'
 subheading: 'The adventures of a bichon'
-homeImage: 'http://assets.theprophetofdog.com/home-page.jpeg'
+homeImage: 'https://assets.theprophetofdog.com/home-page.jpeg'
 ---
