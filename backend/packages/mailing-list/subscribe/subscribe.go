@@ -1,11 +1,13 @@
 package main
 
 func Main(args map[string]interface{}) map[string]interface{} {
-	name, ok := args["name"].(string)
-	if !ok {
-		name = "stranger"
-	}
+	email, ok := args["email"].(string)
 	msg := make(map[string]interface{})
-	msg["body"] = "Hello " + name + "!"
+	if !ok {
+		msg["statusCode"] = 400
+		msg["body"] = "Missing email"
+	}
+
+	msg["body"] = "Subscribing " + email + "!"
 	return msg
 }
