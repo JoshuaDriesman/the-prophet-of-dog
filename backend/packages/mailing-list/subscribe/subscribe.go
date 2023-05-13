@@ -65,8 +65,10 @@ func Main(ctx context.Context, event Event) Response {
 
 func upsertSubscriber(event Event, db *sql.DB) bool {
 	// Check if email already exists
-	rows, selectErr := db.Query("SELECT id FROM subscribers WHERE email = $1;", event.Email)
+	tx, _ := db.Begin()
+	rows, selectErr := tx.Query("SELECT id FROM subscribers WHERE email = $1;", event.Email)
 	if selectErr != nil {
+		tx.Rollback()
 		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
 		return false
 	}
@@ -77,22 +79,32 @@ func upsertSubscriber(event Event, db *sql.DB) bool {
 		rowScanErr := rows.Scan(&id)
 
 		if rowScanErr != nil {
+			tx.Rollback()
 			log.Fatalf("Scan row: %s", rowScanErr)
 			return false
 		}
 
-		db.Query("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
+		_, updateErr := tx.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
 
+		if updateErr != nil {
+			tx.Rollback()
+			log.Fatalf("Could not update to subscribe user: %s", updateErr)
+			return false
+		}
+
+		tx.Commit()
 		return true
 	}
 
 	// if email does not exist, insert it
 	newEmailID := uuid.NewString()
-	_, insertErr := db.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES ($1, $2, $3, $4);", newEmailID, event.Email, event.Name, true)
+	_, insertErr := tx.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES ($1, $2, $3, $4);", newEmailID, event.Email, event.Name, true)
 	if insertErr != nil {
+		tx.Rollback()
 		log.Fatalf("Could not insert subscriber %s: %s", event.Email, insertErr)
 		return false
 	}
 
+	tx.Commit()
 	return true
 }
