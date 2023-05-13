@@ -73,15 +73,15 @@ func upsertSubscriber(event Event, db *sql.DB) bool {
 	defer rows.Close()
 	if rows.Next() {
 		// If email exists, update it to be subscribed
-		var id *string
-		rowScanErr := rows.Scan(id)
+		var id string
+		rowScanErr := rows.Scan(&id)
 
 		if rowScanErr != nil {
 			log.Fatalf("Scan row: %s", rowScanErr)
 			return false
 		}
 
-		db.Query("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, *id)
+		db.Query("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
 
 		return true
 	}
