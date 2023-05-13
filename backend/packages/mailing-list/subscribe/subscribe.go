@@ -48,30 +48,12 @@ func Main(ctx context.Context, event Event) Response {
 	}
 	defer db.Close()
 
-	// Check if email already exists
-	rows, selectErr := db.Query("SELECT * FROM subscribers WHERE email = $1;", event.Email)
-	if selectErr != nil {
-		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
-		return Response{
-			StatusCode: 500,
-			Body:       "DB query error",
-		}
-	}
-	defer rows.Close()
-	if rows.Next() {
-		return Response{
-			StatusCode: 400,
-			Body:       "Email already exists.",
-		}
-	}
+	successSubscribed := upsertSubscriber(event, db)
 
-	newEmailID := uuid.NewString()
-	_, insertErr := db.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES ($1, $2, $3, $4);", newEmailID, event.Email, event.Name, true)
-	if insertErr != nil {
-		log.Fatalf("Could not insert subscriber %s: %s", event.Email, connErr)
+	if !successSubscribed {
 		return Response{
 			StatusCode: 500,
-			Body:       "DB query error",
+			Body:       "Failed to subscribe user",
 		}
 	}
 
@@ -79,4 +61,38 @@ func Main(ctx context.Context, event Event) Response {
 		StatusCode: 200,
 		Body:       "Subscribing " + event.Email,
 	}
+}
+
+func upsertSubscriber(event Event, db *sql.DB) bool {
+	// Check if email already exists
+	rows, selectErr := db.Query("SELECT id FROM subscribers WHERE email = $1;", event.Email)
+	if selectErr != nil {
+		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
+		return false
+	}
+	defer rows.Close()
+	if rows.Next() {
+		// If email exists, update it to be subscribed
+		var id *string
+		rowScanErr := rows.Scan(id)
+
+		if rowScanErr != nil {
+			log.Fatalf("Scan row: %s", rowScanErr)
+			return false
+		}
+
+		db.Query("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, *id)
+
+		return true
+	}
+
+	// if email does not exist, insert it
+	newEmailID := uuid.NewString()
+	_, insertErr := db.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES ($1, $2, $3, $4);", newEmailID, event.Email, event.Name, true)
+	if insertErr != nil {
+		log.Fatalf("Could not insert subscriber %s: %s", event.Email, insertErr)
+		return false
+	}
+
+	return true
 }
