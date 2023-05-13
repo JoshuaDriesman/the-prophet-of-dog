@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 	"os"
 
@@ -37,14 +36,21 @@ func Main(ctx context.Context, event Event) Response {
 	}
 	defer db.Close()
 
-	fmt.Printf("%s\n", event.ID)
-	_, updateErr := db.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2", false, event.ID)
+	result, updateErr := db.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2", false, event.ID)
 
 	if updateErr != nil {
 		log.Fatalf("Failed to unsubscribe %s: %s", event.ID, updateErr)
 		return Response{
 			StatusCode: 500,
 			Body:       "Failed to unsubscribe",
+		}
+	}
+
+	rowCount, _ := result.RowsAffected()
+	if rowCount < 1 {
+		return Response{
+			StatusCode: 404,
+			Body:       "ID not found",
 		}
 	}
 
