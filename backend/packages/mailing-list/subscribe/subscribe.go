@@ -1,6 +1,9 @@
 package main
 
-import "context"
+import (
+	"context"
+	"regexp"
+)
 
 type Event struct {
 	Email string `json:"email"`
@@ -17,6 +20,15 @@ func Main(ctx context.Context, event Event) Response {
 		return Response{
 			StatusCode: 400,
 			Body:       "Missing email",
+		}
+	}
+
+	match, _ := regexp.MatchString(".+\@.+\..+", event.Email)
+
+	if !match {
+		return Response{
+			StatusCode: 400,
+			Body: "Email is invalid",
 		}
 	}
 
