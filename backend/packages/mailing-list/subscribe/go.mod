@@ -1,4 +1,4 @@
-module github.com/JoshuaDriesman/the-prophet-of-dog
+module github.com/JoshuaDriesman/the-prophet-of-dog/packages/mailing-list/subscribe
 
 go 1.20
 
