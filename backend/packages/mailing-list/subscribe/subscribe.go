@@ -72,7 +72,7 @@ func upsertSubscriber(event Event, db *sql.DB) bool {
 		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
 		return false
 	}
-	defer rows.Close()
+
 	if rows.Next() {
 		// If email exists, update it to be subscribed
 		var id string
@@ -84,7 +84,9 @@ func upsertSubscriber(event Event, db *sql.DB) bool {
 			return false
 		}
 
-		_, updateErr := tx.Query("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
+		rows.Close()
+
+		_, updateErr := tx.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
 
 		if updateErr != nil {
 			tx.Rollback()
