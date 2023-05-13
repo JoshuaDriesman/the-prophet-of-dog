@@ -49,7 +49,7 @@ func Main(ctx context.Context, event Event) Response {
 	defer db.Close()
 
 	// Check if email already exists
-	rows, selectErr := db.Query("SELECT * FROM subscribers WHERE email = %s;", event.Email)
+	rows, selectErr := db.Query("SELECT * FROM subscribers WHERE email = $1;", event.Email)
 	if selectErr != nil {
 		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
 		return Response{
@@ -66,7 +66,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	newEmailID := uuid.NewString()
-	_, insertErr := db.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES (%s, %s, %s, %t);", newEmailID, event.Email, event.Name, true)
+	_, insertErr := db.Exec("INSERT INTO subscribers (id, email, name, subscribed) VALUES ($1, $2, $3, $4);", newEmailID, event.Email, event.Name, true)
 	if insertErr != nil {
 		log.Fatalf("Could not insert subscriber %s: %s", event.Email, connErr)
 		return Response{
