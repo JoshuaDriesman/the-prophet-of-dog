@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"log"
 	"os"
 
@@ -36,6 +37,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 	defer db.Close()
 
+	fmt.Printf("%s\n", event.ID)
 	_, updateErr := db.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2", false, event.ID)
 
 	if updateErr != nil {
