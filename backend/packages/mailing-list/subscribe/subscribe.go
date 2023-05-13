@@ -23,12 +23,12 @@ func Main(ctx context.Context, event Event) Response {
 		}
 	}
 
-	match, _ := regexp.MatchString(".+\@.+\..+", event.Email)
+	match, _ := regexp.MatchString(".+\\@.+\\..+", event.Email)
 
 	if !match {
 		return Response{
 			StatusCode: 400,
-			Body: "Email is invalid",
+			Body:       "Email is invalid",
 		}
 	}
 
