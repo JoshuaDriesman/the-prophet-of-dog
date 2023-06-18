@@ -56,6 +56,6 @@ func Main(ctx context.Context, event Event) Response {
 
 	return Response{
 		StatusCode: 200,
-		Body:       "",
+		Body:       "Successfully unsubscribed!",
 	}
 }
