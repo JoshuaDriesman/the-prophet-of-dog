@@ -147,7 +147,11 @@ func Main(ctx context.Context, event Event) Response {
 
 		response, err := sendClient.Send(sendgridMail)
 		log.Println(response)
-		log.Println(err)
+
+		if err != nil {
+			log.Printf("Could not send message: %s", err)
+			err = nil
+		}
 	}
 
 	return Response{
