@@ -26,3 +26,12 @@ packages:
         environment: {}
         annotations: {}
         limits: {}
+      - name: send-email
+        binary: false
+        main: ''
+        runtime: go:1.20
+        web: false
+        parameters: {}
+        environment: {}
+        annotations: {}
+        limits: {}

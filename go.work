@@ -1,3 +1,7 @@
 go 1.20
 
 use ./backend/packages/mailing-list/subscribe
+
+use ./backend/packages/mailing-list/unsubscribe
+
+use ./backend/packages/mailing-list/send-email
