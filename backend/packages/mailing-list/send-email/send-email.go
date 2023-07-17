@@ -64,6 +64,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
+		systemErrorResp.Body = "could not get reader"
 		log.Fatal(err)
 		return systemErrorResp
 	}
@@ -71,6 +72,7 @@ func Main(ctx context.Context, event Event) Response {
 	title := doc.Find("#post__title").First().Text()
 	splitPreview := strings.Split(doc.Find(".post__content").First().Text(), ". ")
 	if len(splitPreview) < 1 {
+		systemErrorResp.Body = "could not parse content"
 		log.Fatalf("Could not parse content")
 		return systemErrorResp
 	}
@@ -109,6 +111,7 @@ func Main(ctx context.Context, event Event) Response {
 
 	sendgridApiKey := os.Getenv("SENDGRID_API_KEY")
 	if sendgridApiKey == "" {
+		systemErrorResp.Body = "could not get api key"
 		log.Fatal("Could not retrieve sendgrid api key")
 		return systemErrorResp
 	}
@@ -118,11 +121,12 @@ func Main(ctx context.Context, event Event) Response {
 	sendgridBatchIdRequest.Method = "POST"
 	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
 	if err != nil {
-		log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
 		systemErrorResp.Body = err.Error()
+		log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
 		return systemErrorResp
 	}
 	if sendgridBatchIdResponse.StatusCode != 200 {
+		systemErrorResp.Body = "sendgrid batch id could not be retrieved"
 		log.Fatal("Could not retrieve sendgrid batch ID")
 		return systemErrorResp
 	}
