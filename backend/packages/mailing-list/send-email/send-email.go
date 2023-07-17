@@ -61,20 +61,22 @@ func Main(ctx context.Context, event Event) Response {
 		log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
 		return systemErrorResp
 	}
+	log.Println("Got article")
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		log.Fatal(err)
 		return systemErrorResp
 	}
+	log.Println("Created reader")
 
 	title := doc.Find("#post__title").First().Text()
 	splitPreview := strings.Split(doc.Find(".post__content").First().Text(), ". ")
-
 	if len(splitPreview) < 1 {
 		log.Fatalf("Could not parse content")
 		return systemErrorResp
 	}
 	preview := splitPreview[0]
+	log.Println("Parsed article")
 
 	db, connErr := sql.Open("postgres", os.Getenv("DB_CONNECTION_INFO"))
 	if connErr != nil {
@@ -82,12 +84,14 @@ func Main(ctx context.Context, event Event) Response {
 		return systemErrorResp
 	}
 	defer db.Close()
+	log.Println("Opened DB conn")
 
 	rows, err := db.Query("SELECT id, name, email FROM subscribers WHERE subscribed = true;")
 	if err != nil {
 		log.Fatalf("Could not list subscribers: %s", err.Error())
 		return systemErrorResp
 	}
+	log.Println("Got subs")
 
 	subscribers := []Subscriber{}
 	if rows.Next() {
@@ -103,6 +107,7 @@ func Main(ctx context.Context, event Event) Response {
 		}
 		subscribers = append(subscribers, subscriber)
 	}
+	log.Println("Read subs")
 
 	sendgridApiKey := os.Getenv("SENDGRID_API_KEY")
 	if sendgridApiKey == "" {
@@ -114,6 +119,7 @@ func Main(ctx context.Context, event Event) Response {
 	sendgridBatchIdRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/batch", sendgridHost)
 	sendgridBatchIdRequest.Method = "POST"
 	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
+	log.Println("Got batch ID")
 	if sendgridApiKey == "" {
 		log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
 		return systemErrorResp
