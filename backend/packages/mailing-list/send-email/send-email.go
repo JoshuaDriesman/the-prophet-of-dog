@@ -94,7 +94,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	subscribers := []Subscriber{}
-	if rows.Next() {
+	for rows.Next() {
 		subscriber := Subscriber{
 			ID:    "",
 			Email: "",
