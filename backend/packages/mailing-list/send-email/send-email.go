@@ -100,7 +100,7 @@ func Main(ctx context.Context, event Event) Response {
 			Email: "",
 			Name:  "",
 		}
-		err := rows.Scan(subscriber.ID, subscriber.Email, subscriber.Name)
+		err := rows.Scan(&subscriber.ID, &subscriber.Email, &subscriber.Name)
 		if err != nil {
 			systemErrorResp.Body = err.Error()
 			// log.Fatalf("Could parse row: %s", err.Error())
