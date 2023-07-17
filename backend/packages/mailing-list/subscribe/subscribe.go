@@ -66,7 +66,7 @@ func Main(ctx context.Context, event Event) Response {
 func upsertSubscriber(event Event, db *sql.DB) bool {
 	// Check if email already exists
 	tx, _ := db.Begin()
-	rows, selectErr := tx.Query("SELECT id FROM subscribers WHERE email = $1;", event.Email)
+	rows, selectErr := tx.Query("SELECT id FROM subscribers WHERE email = $1 LIMIT 1;", event.Email)
 	if selectErr != nil {
 		tx.Rollback()
 		log.Fatalf("Could not check subscriber %s: %s", event.Email, selectErr)
