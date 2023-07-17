@@ -1,6 +1,7 @@
 parameters: {}
 environment:
   DB_CONNECTION_INFO: '${DB_CONNECTION_INFO}'
+  SENDGRID_API_KEY: '${SENDGRID_API_KEY}'
 packages:
   - name: mailing-list
     shared: false

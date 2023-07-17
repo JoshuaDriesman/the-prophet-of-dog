@@ -158,6 +158,7 @@ func Main(ctx context.Context, event Event) Response {
 		personalization.SetDynamicTemplateData("unsubscribe", fmt.Sprintf("https://theprophetofdog.com/api/mailing-list/unsubscribe?id=%s", subscriber.ID))
 
 		sendgridMail.Personalizations = append(sendgridMail.Personalizations, personalization)
+		sendgridMail.BatchID = batchID.BatchID
 
 		response, err := sendClient.Send(sendgridMail)
 		log.Println(response)
