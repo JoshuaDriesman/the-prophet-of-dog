@@ -39,7 +39,7 @@ type SendGridBatchIDResponse struct {
 func Main(ctx context.Context, event Event) Response {
 	systemErrorResp := Response{
 		Body:       "",
-		StatusCode: 500,
+		StatusCode: 400,
 	}
 
 	if event.Passcode != "bichybichybichy" {
@@ -163,6 +163,7 @@ func Main(ctx context.Context, event Event) Response {
 		log.Println(response)
 
 		if err != nil {
+			systemErrorResp.Body = err.Error()
 			log.Printf("Could not send message: %s", err)
 			err = nil
 		}
