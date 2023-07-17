@@ -58,8 +58,8 @@ func Main(ctx context.Context, event Event) Response {
 
 	resp, err := http.Get(event.Link)
 	if err != nil {
-		log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
 		systemErrorResp.Body = err.Error()
+		log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
 		return systemErrorResp
 	}
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
@@ -78,16 +78,16 @@ func Main(ctx context.Context, event Event) Response {
 
 	db, connErr := sql.Open("postgres", os.Getenv("DB_CONNECTION_INFO"))
 	if connErr != nil {
-		log.Fatalf("Can't connect to DB: %s", connErr)
 		systemErrorResp.Body = connErr.Error()
+		log.Fatalf("Can't connect to DB: %s", connErr)
 		return systemErrorResp
 	}
 	defer db.Close()
 
 	rows, err := db.Query("SELECT id, name, email FROM subscribers WHERE subscribed = true;")
 	if err != nil {
-		log.Fatalf("Could not list subscribers: %s", err.Error())
 		systemErrorResp.Body = err.Error()
+		log.Fatalf("Could not list subscribers: %s", err.Error())
 		return systemErrorResp
 	}
 
@@ -100,8 +100,8 @@ func Main(ctx context.Context, event Event) Response {
 		}
 		err := rows.Scan(subscriber.ID, subscriber.Email, subscriber.Name)
 		if err != nil {
-			log.Fatalf("Could parse row: %s", err.Error())
 			systemErrorResp.Body = err.Error()
+			log.Fatalf("Could parse row: %s", err.Error())
 			return systemErrorResp
 		}
 		subscribers = append(subscribers, subscriber)
@@ -130,8 +130,8 @@ func Main(ctx context.Context, event Event) Response {
 	var batchID SendGridBatchIDResponse
 	sendGridUnmarshalErr := json.Unmarshal(sendgridBatchIdRequest.Body, &batchID)
 	if sendGridUnmarshalErr != nil {
-		log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
 		systemErrorResp.Body = sendGridUnmarshalErr.Error()
+		log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
 		return systemErrorResp
 	}
 
