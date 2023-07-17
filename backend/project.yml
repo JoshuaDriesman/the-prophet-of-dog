@@ -28,6 +28,7 @@ packages:
         limits: {}
       - name: send-email
         binary: false
+        web: true
         main: ''
         runtime: go:1.20
         parameters: {}

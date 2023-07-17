@@ -17,7 +17,8 @@ import (
 )
 
 type Event struct {
-	Link string `json:"link"`
+	Link     string `json:"link"`
+	Passcode string `json:"passcode"`
 }
 
 type Response struct {
@@ -39,6 +40,13 @@ func Main(ctx context.Context, event Event) Response {
 	systemErrorResp := Response{
 		Body:       "",
 		StatusCode: 500,
+	}
+
+	if event.Passcode != "bichybichybichy" {
+		return Response{
+			Body:       "Not Authorized",
+			StatusCode: 401,
+		}
 	}
 
 	if event.Link == "" {
