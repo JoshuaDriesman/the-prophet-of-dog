@@ -59,13 +59,13 @@ func Main(ctx context.Context, event Event) Response {
 	resp, err := http.Get(event.Link)
 	if err != nil {
 		systemErrorResp.Body = err.Error()
-		log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
+		// log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
 		return systemErrorResp
 	}
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
 		systemErrorResp.Body = "could not get reader"
-		log.Fatal(err)
+		// log.Fatal(err)
 		return systemErrorResp
 	}
 
@@ -73,7 +73,7 @@ func Main(ctx context.Context, event Event) Response {
 	splitPreview := strings.Split(doc.Find(".post__content").First().Text(), ". ")
 	if len(splitPreview) < 1 {
 		systemErrorResp.Body = "could not parse content"
-		log.Fatalf("Could not parse content")
+		// log.Fatalf("Could not parse content")
 		return systemErrorResp
 	}
 	preview := splitPreview[0]
@@ -81,7 +81,7 @@ func Main(ctx context.Context, event Event) Response {
 	db, connErr := sql.Open("postgres", os.Getenv("DB_CONNECTION_INFO"))
 	if connErr != nil {
 		systemErrorResp.Body = connErr.Error()
-		log.Fatalf("Can't connect to DB: %s", connErr)
+		// log.Fatalf("Can't connect to DB: %s", connErr)
 		return systemErrorResp
 	}
 	defer db.Close()
@@ -89,7 +89,7 @@ func Main(ctx context.Context, event Event) Response {
 	rows, err := db.Query("SELECT id, name, email FROM subscribers WHERE subscribed = true;")
 	if err != nil {
 		systemErrorResp.Body = err.Error()
-		log.Fatalf("Could not list subscribers: %s", err.Error())
+		// log.Fatalf("Could not list subscribers: %s", err.Error())
 		return systemErrorResp
 	}
 
@@ -103,7 +103,7 @@ func Main(ctx context.Context, event Event) Response {
 		err := rows.Scan(subscriber.ID, subscriber.Email, subscriber.Name)
 		if err != nil {
 			systemErrorResp.Body = err.Error()
-			log.Fatalf("Could parse row: %s", err.Error())
+			// log.Fatalf("Could parse row: %s", err.Error())
 			return systemErrorResp
 		}
 		subscribers = append(subscribers, subscriber)
@@ -112,7 +112,7 @@ func Main(ctx context.Context, event Event) Response {
 	sendgridApiKey := os.Getenv("SENDGRID_API_KEY")
 	if sendgridApiKey == "" {
 		systemErrorResp.Body = "could not get api key"
-		log.Fatal("Could not retrieve sendgrid api key")
+		// log.Fatal("Could not retrieve sendgrid api key")
 		return systemErrorResp
 	}
 
@@ -122,12 +122,12 @@ func Main(ctx context.Context, event Event) Response {
 	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
 	if err != nil {
 		systemErrorResp.Body = err.Error()
-		log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
+		// log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
 		return systemErrorResp
 	}
 	if sendgridBatchIdResponse.StatusCode != 200 {
 		systemErrorResp.Body = "sendgrid batch id could not be retrieved"
-		log.Fatal("Could not retrieve sendgrid batch ID")
+		// log.Fatal("Could not retrieve sendgrid batch ID")
 		return systemErrorResp
 	}
 
@@ -135,7 +135,7 @@ func Main(ctx context.Context, event Event) Response {
 	sendGridUnmarshalErr := json.Unmarshal(sendgridBatchIdRequest.Body, &batchID)
 	if sendGridUnmarshalErr != nil {
 		systemErrorResp.Body = sendGridUnmarshalErr.Error()
-		log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
+		// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
 		return systemErrorResp
 	}
 
