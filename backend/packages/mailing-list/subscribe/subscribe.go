@@ -86,7 +86,7 @@ func upsertSubscriber(event Event, db *sql.DB) bool {
 
 		rows.Close()
 
-		_, updateErr := tx.Exec("UPDATE subscribers SET subscribed =  WHERE id=$2;", true, id)
+		_, updateErr := tx.Exec("UPDATE subscribers SET subscribed = $1 WHERE id=$2;", true, id)
 
 		if updateErr != nil {
 			tx.Rollback()
