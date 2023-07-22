@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	_ "github.com/lib/pq"
@@ -38,6 +39,7 @@ type SendGridBatchIDResponse struct {
 
 func Main(ctx context.Context, event Event) Response {
 	logger := log.New(os.Stdout, "pog: ", log.Ldate)
+	sendAtTime := time.Now().Add(time.Minute * 5)
 	systemErrorResp := Response{
 		Body:       "",
 		StatusCode: 400,
@@ -155,7 +157,8 @@ func Main(ctx context.Context, event Event) Response {
 		personalization.SetDynamicTemplateData("unsubscribe", fmt.Sprintf("https://theprophetofdog.com/api/mailing-list/unsubscribe?id=%s", subscriber.ID))
 
 		sendgridMail.AddPersonalizations(personalization)
-		sendgridMail.BatchID = batchIDRes.BatchID
+		sendgridMail.SetBatchID(batchIDRes.BatchID)
+		sendgridMail.SetSendAt(int(sendAtTime.Unix()))
 
 		response, err := sendClient.Send(sendgridMail)
 		responses = append(responses, response.Body)
@@ -168,6 +171,6 @@ func Main(ctx context.Context, event Event) Response {
 
 	return Response{
 		StatusCode: 200,
-		Body:       "success",
+		Body:       fmt.Sprintf("success, batchID: %s", batchIDRes.BatchID),
 	}
 }
