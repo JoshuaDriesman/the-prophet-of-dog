@@ -124,10 +124,10 @@ func Main(ctx context.Context, event Event) Response {
 		return systemErrorResp
 	}
 
-	var batchID SendGridBatchIDResponse
-	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
+	var batchIDRes SendGridBatchIDResponse
+	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchIDRes)
 	if sendGridUnmarshalErr != nil {
-		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
+		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchIDRes)
 		logger.Printf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
 		return systemErrorResp
 	}
@@ -155,7 +155,7 @@ func Main(ctx context.Context, event Event) Response {
 		personalization.SetDynamicTemplateData("unsubscribe", fmt.Sprintf("https://theprophetofdog.com/api/mailing-list/unsubscribe?id=%s", subscriber.ID))
 
 		sendgridMail.AddPersonalizations(personalization)
-		// sendgridMail.BatchID = batchID.BatchID
+		// sendgridMail.BatchID = batchIDRes.BatchID
 
 		response, err := sendClient.Send(sendgridMail)
 		responses = append(responses, response.Body)
