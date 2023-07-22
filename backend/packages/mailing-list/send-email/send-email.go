@@ -139,6 +139,7 @@ func Main(ctx context.Context, event Event) Response {
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
 	sentCount := 0
 	responses := []string{}
+	emails := []string{}
 	for _, subscriber := range subscribers {
 		sendgridSendEmailRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/send", sendgridHost)
 		sendgridSendEmailRequest.Method = "POST"
@@ -151,7 +152,7 @@ func Main(ctx context.Context, event Event) Response {
 
 		personalization := mail.NewPersonalization()
 		personalization.AddTos(
-			mail.NewEmail(subscriber.Name, "me@joshuadriesman.me"),
+			mail.NewEmail(subscriber.Name, subscriber.Email),
 		)
 		personalization.SetDynamicTemplateData("subject", title)
 		personalization.SetDynamicTemplateData("title", title)
@@ -171,10 +172,11 @@ func Main(ctx context.Context, event Event) Response {
 			err = nil
 		}
 		sentCount += 1
+		emails = append(emails, subscriber.Email)
 	}
 
 	return Response{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("success %d, %v, %v", sentCount, responses, subscribers),
+		Body:       fmt.Sprintf("success %d, %v, %v", sentCount, responses, emails),
 	}
 }
