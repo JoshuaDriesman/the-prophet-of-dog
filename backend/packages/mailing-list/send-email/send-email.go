@@ -38,7 +38,6 @@ type SendGridBatchIDResponse struct {
 
 func Main(ctx context.Context, event Event) Response {
 	logger := log.New(os.Stdout, "pog: ", log.Ldate)
-	logger.Printf("TEST TEST TEST")
 	systemErrorResp := Response{
 		Body:       "",
 		StatusCode: 400,
@@ -125,7 +124,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	var batchIDRes SendGridBatchIDResponse
-	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchIDRes)
+	sendGridUnmarshalErr := json.Unmarshal(sendgridBatchIdRequest.Body, &batchIDRes)
 	if sendGridUnmarshalErr != nil {
 		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchIDRes)
 		logger.Printf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
