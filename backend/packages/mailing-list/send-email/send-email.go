@@ -36,7 +36,7 @@ type SendGridBatchIDResponse struct {
 }
 
 func Main(ctx context.Context, event Event) Response {
-	logger := log.New(os.Stderr, "pog: ", log.Ldate)
+	logger := log.New(os.Stdout, "pog: ", log.Ldate)
 	logger.Printf("TEST TEST TEST")
 	systemErrorResp := Response{
 		Body:       "",
@@ -85,8 +85,7 @@ func Main(ctx context.Context, event Event) Response {
 
 	rows, err := db.Query("SELECT id, name, email FROM subscribers WHERE subscribed = true;")
 	if err != nil {
-		systemErrorResp.Body = err.Error()
-		// log.Fatalf("Could not list subscribers: %s", err.Error())
+		logger.Printf("Could not list subscribers: %s", err.Error())
 		return systemErrorResp
 	}
 
@@ -99,8 +98,7 @@ func Main(ctx context.Context, event Event) Response {
 		}
 		err := rows.Scan(&subscriber.ID, &subscriber.Name, &subscriber.Email)
 		if err != nil {
-			systemErrorResp.Body = err.Error()
-			// log.Fatalf("Could parse row: %s", err.Error())
+			logger.Printf("Could parse row: %s", err.Error())
 			return systemErrorResp
 		}
 		subscribers = append(subscribers, subscriber)
@@ -108,8 +106,7 @@ func Main(ctx context.Context, event Event) Response {
 
 	sendgridApiKey := os.Getenv("SENDGRID_API_KEY")
 	if sendgridApiKey == "" {
-		systemErrorResp.Body = "could not get api key"
-		// log.Fatal("Could not retrieve sendgrid api key")
+		logger.Print("Could not retrieve sendgrid api key")
 		return systemErrorResp
 	}
 
@@ -163,7 +160,7 @@ func Main(ctx context.Context, event Event) Response {
 		responses = append(responses, response.Body)
 
 		if err != nil || response.StatusCode != 202 {
-			log.Printf("Could not send message: %s", err)
+			logger.Printf("Could not send message: %s", err)
 			err = nil
 		}
 	}
