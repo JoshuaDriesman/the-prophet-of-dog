@@ -130,11 +130,10 @@ func Main(ctx context.Context, event Event) Response {
 		return systemErrorResp
 	}
 
-	var batchID SendGridBatchIDResponse
+	batchID := new(SendGridBatchIDResponse)
 	sendGridUnmarshalErr := json.Unmarshal(sendgridBatchIdRequest.Body, &batchID)
 	if sendGridUnmarshalErr != nil {
-		// systemErrorResp.Body = sendGridUnmarshalErr.Error()
-		systemErrorResp.Body = sendgridBatchIdResponse.Body
+		systemErrorResp.Body = sendGridUnmarshalErr.Error()
 		// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
 		return systemErrorResp
 	}
