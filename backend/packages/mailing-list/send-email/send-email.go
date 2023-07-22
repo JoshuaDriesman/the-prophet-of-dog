@@ -36,6 +36,8 @@ type SendGridBatchIDResponse struct {
 }
 
 func Main(ctx context.Context, event Event) Response {
+	logger := log.New(os.Stderr, "pog: ", log.Ldate)
+	logger.Printf("TEST TEST TEST")
 	systemErrorResp := Response{
 		Body:       "",
 		StatusCode: 400,
@@ -57,30 +59,26 @@ func Main(ctx context.Context, event Event) Response {
 
 	resp, err := http.Get(event.Link)
 	if err != nil {
-		systemErrorResp.Body = err.Error()
-		// log.Fatalf("Could not load link %s due to error: %s", event.Link, err.Error())
+		logger.Printf("Could not load link %s due to error: %s", event.Link, err.Error())
 		return systemErrorResp
 	}
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		systemErrorResp.Body = "could not get reader"
-		// log.Fatal(err)
+		logger.Print(err.Error())
 		return systemErrorResp
 	}
 
 	title := doc.Find("#post__title").First().Text()
 	splitPreview := strings.Split(doc.Find(".post__content").First().Text(), ". ")
 	if len(splitPreview) < 1 {
-		systemErrorResp.Body = "could not parse content"
-		// log.Fatalf("Could not parse content")
+		logger.Print("Could not parse content")
 		return systemErrorResp
 	}
 	preview := splitPreview[0]
 
 	db, connErr := sql.Open("postgres", os.Getenv("DB_CONNECTION_INFO"))
 	if connErr != nil {
-		systemErrorResp.Body = connErr.Error()
-		// log.Fatalf("Can't connect to DB: %s", connErr)
+		logger.Printf("Can't connect to DB: %s", connErr)
 		return systemErrorResp
 	}
 	defer db.Close()
@@ -137,9 +135,7 @@ func Main(ctx context.Context, event Event) Response {
 	// }
 
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
-	sentCount := 0
 	responses := []string{}
-	emails := []string{}
 	for _, subscriber := range subscribers {
 		sendgridSendEmailRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/send", sendgridHost)
 		sendgridSendEmailRequest.Method = "POST"
@@ -167,16 +163,13 @@ func Main(ctx context.Context, event Event) Response {
 		responses = append(responses, response.Body)
 
 		if err != nil || response.StatusCode != 202 {
-			systemErrorResp.Body = fmt.Sprintf("%v", sendgridMail)
 			log.Printf("Could not send message: %s", err)
 			err = nil
 		}
-		sentCount += 1
-		emails = append(emails, subscriber.Email)
 	}
 
 	return Response{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("success %d, %v, %v", sentCount, responses, emails),
+		Body:       "success",
 	}
 }
