@@ -96,10 +96,10 @@ func Main(ctx context.Context, event Event) Response {
 	for rows.Next() {
 		subscriber := Subscriber{
 			ID:    "",
-			Email: "",
 			Name:  "",
+			Email: "",
 		}
-		err := rows.Scan(&subscriber.ID, &subscriber.Email, &subscriber.Name)
+		err := rows.Scan(&subscriber.ID, &subscriber.Name, &subscriber.Email)
 		if err != nil {
 			systemErrorResp.Body = err.Error()
 			// log.Fatalf("Could parse row: %s", err.Error())
