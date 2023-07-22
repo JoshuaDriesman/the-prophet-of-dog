@@ -165,8 +165,8 @@ func Main(ctx context.Context, event Event) Response {
 		response, err := sendClient.Send(sendgridMail)
 		responses = append(responses, response.Body)
 
-		if err != nil {
-			systemErrorResp.Body = err.Error()
+		if err != nil || response.StatusCode != 202 {
+			systemErrorResp.Body = fmt.Sprintf("%v", sendgridMail)
 			log.Printf("Could not send message: %s", err)
 			err = nil
 		}
