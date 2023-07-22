@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -111,25 +112,25 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	sendgridHost := "https://api.sendgrid.com"
-	// sendgridBatchIdRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/batch", sendgridHost)
-	// sendgridBatchIdRequest.Method = "POST"
-	// sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
-	// if err != nil {
-	// 	log.Printf("Could not retrieve sendgrid batch ID: %s", err)
-	// 	return systemErrorResp
-	// }
-	// if sendgridBatchIdResponse.StatusCode != 201 {
-	// 	log.Printf("Could not retrieve sendgrid batch ID: %d, %s", sendgridBatchIdResponse.StatusCode, sendgridBatchIdResponse.Body)
-	// 	return systemErrorResp
-	// }
+	sendgridBatchIdRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/batch", sendgridHost)
+	sendgridBatchIdRequest.Method = "POST"
+	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
+	if err != nil {
+		logger.Printf("Could not retrieve sendgrid batch ID: %s", err)
+		return systemErrorResp
+	}
+	if sendgridBatchIdResponse.StatusCode != 201 {
+		logger.Printf("Could not retrieve sendgrid batch ID: %d, %s", sendgridBatchIdResponse.StatusCode, sendgridBatchIdResponse.Body)
+		return systemErrorResp
+	}
 
-	// var batchID SendGridBatchIDResponse
-	// sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
-	// if sendGridUnmarshalErr != nil {
-	// 	systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
-	// 	// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
-	// 	return systemErrorResp
-	// }
+	var batchID SendGridBatchIDResponse
+	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
+	if sendGridUnmarshalErr != nil {
+		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
+		logger.Printf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
+		return systemErrorResp
+	}
 
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
 	responses := []string{}
