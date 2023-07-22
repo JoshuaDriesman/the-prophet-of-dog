@@ -130,7 +130,6 @@ func Main(ctx context.Context, event Event) Response {
 
 	// var batchID SendGridBatchIDResponse
 	// sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
-	// fmt.Print("bla")
 	// if sendGridUnmarshalErr != nil {
 	// 	systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
 	// 	// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
@@ -138,6 +137,7 @@ func Main(ctx context.Context, event Event) Response {
 	// }
 
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
+	sentCount := 0
 	for _, subscriber := range subscribers {
 		sendgridSendEmailRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/send", sendgridHost)
 		sendgridSendEmailRequest.Method = "POST"
@@ -169,10 +169,11 @@ func Main(ctx context.Context, event Event) Response {
 			log.Printf("Could not send message: %s", err)
 			err = nil
 		}
+		sentCount += 1
 	}
 
 	return Response{
 		StatusCode: 200,
-		Body:       "success",
+		Body:       fmt.Sprintf("success %d", sentCount),
 	}
 }
