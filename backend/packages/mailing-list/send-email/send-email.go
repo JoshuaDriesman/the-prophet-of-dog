@@ -127,7 +127,7 @@ func Main(ctx context.Context, event Event) Response {
 	}
 	if sendgridBatchIdResponse.StatusCode != 200 {
 		systemErrorResp.Body = "sendgrid batch id could not be retrieved"
-		log.Print("Could not retrieve sendgrid batch ID")
+		log.Printf("Could not retrieve sendgrid batch ID: %d, %s", sendgridBatchIdResponse.StatusCode, sendgridBatchIdResponse.Body)
 		return systemErrorResp
 	}
 
