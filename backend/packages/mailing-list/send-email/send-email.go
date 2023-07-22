@@ -151,7 +151,7 @@ func Main(ctx context.Context, event Event) Response {
 
 		personalization := mail.NewPersonalization()
 		personalization.AddTos(
-			mail.NewEmail(subscriber.Name, subscriber.Email),
+			mail.NewEmail(subscriber.Name, "me@joshuadriesman.me"),
 		)
 		personalization.SetDynamicTemplateData("subject", title)
 		personalization.SetDynamicTemplateData("title", title)
