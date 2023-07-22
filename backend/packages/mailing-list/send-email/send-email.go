@@ -163,7 +163,7 @@ func Main(ctx context.Context, event Event) Response {
 		// sendgridMail.BatchID = batchID.BatchID
 
 		response, err := sendClient.Send(sendgridMail)
-		responses = append(responses, response.Body)
+		responses = append(responses, fmt.Sprintf("%v", sendgridMail.Personalizations))
 
 		if err != nil || response.StatusCode != 202 {
 			systemErrorResp.Body = fmt.Sprintf("%v", sendgridMail)
