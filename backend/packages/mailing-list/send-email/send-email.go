@@ -175,6 +175,6 @@ func Main(ctx context.Context, event Event) Response {
 
 	return Response{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("success %d, %v", sentCount, responses),
+		Body:       fmt.Sprintf("success %d, %v, %v", sentCount, responses, subscribers),
 	}
 }
