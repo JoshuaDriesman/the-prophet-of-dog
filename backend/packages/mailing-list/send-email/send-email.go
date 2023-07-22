@@ -121,8 +121,7 @@ func Main(ctx context.Context, event Event) Response {
 	sendgridBatchIdRequest.Method = "POST"
 	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
 	if err != nil {
-		systemErrorResp.Body = err.Error()
-		// log.Fatalf("Could not retrieve sendgrid batch ID: %s", err)
+		log.Printf("Could not retrieve sendgrid batch ID: %s", err)
 		return systemErrorResp
 	}
 	if sendgridBatchIdResponse.StatusCode != 201 {
@@ -131,7 +130,8 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	var batchID SendGridBatchIDResponse
-	sendGridUnmarshalErr := json.Unmarshal(sendgridBatchIdRequest.Body, &batchID)
+	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
+	fmt.Print("bla")
 	if sendGridUnmarshalErr != nil {
 		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
 		// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
