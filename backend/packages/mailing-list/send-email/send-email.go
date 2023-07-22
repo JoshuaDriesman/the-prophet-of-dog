@@ -138,6 +138,7 @@ func Main(ctx context.Context, event Event) Response {
 
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
 	sentCount := 0
+	responses := []string{}
 	for _, subscriber := range subscribers {
 		sendgridSendEmailRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/send", sendgridHost)
 		sendgridSendEmailRequest.Method = "POST"
@@ -162,7 +163,7 @@ func Main(ctx context.Context, event Event) Response {
 		// sendgridMail.BatchID = batchID.BatchID
 
 		response, err := sendClient.Send(sendgridMail)
-		log.Println(response)
+		responses = append(responses, response.Body)
 
 		if err != nil {
 			systemErrorResp.Body = err.Error()
@@ -174,6 +175,6 @@ func Main(ctx context.Context, event Event) Response {
 
 	return Response{
 		StatusCode: 200,
-		Body:       fmt.Sprintf("success %d", sentCount),
+		Body:       fmt.Sprintf("success %d, %v", sentCount, responses),
 	}
 }
