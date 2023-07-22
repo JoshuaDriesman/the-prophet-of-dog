@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -117,26 +116,26 @@ func Main(ctx context.Context, event Event) Response {
 	}
 
 	sendgridHost := "https://api.sendgrid.com"
-	sendgridBatchIdRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/batch", sendgridHost)
-	sendgridBatchIdRequest.Method = "POST"
-	sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
-	if err != nil {
-		log.Printf("Could not retrieve sendgrid batch ID: %s", err)
-		return systemErrorResp
-	}
-	if sendgridBatchIdResponse.StatusCode != 201 {
-		log.Printf("Could not retrieve sendgrid batch ID: %d, %s", sendgridBatchIdResponse.StatusCode, sendgridBatchIdResponse.Body)
-		return systemErrorResp
-	}
+	// sendgridBatchIdRequest := sendgrid.GetRequest(sendgridApiKey, "/v3/mail/batch", sendgridHost)
+	// sendgridBatchIdRequest.Method = "POST"
+	// sendgridBatchIdResponse, err := sendgrid.API(sendgridBatchIdRequest)
+	// if err != nil {
+	// 	log.Printf("Could not retrieve sendgrid batch ID: %s", err)
+	// 	return systemErrorResp
+	// }
+	// if sendgridBatchIdResponse.StatusCode != 201 {
+	// 	log.Printf("Could not retrieve sendgrid batch ID: %d, %s", sendgridBatchIdResponse.StatusCode, sendgridBatchIdResponse.Body)
+	// 	return systemErrorResp
+	// }
 
-	var batchID SendGridBatchIDResponse
-	sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
-	fmt.Print("bla")
-	if sendGridUnmarshalErr != nil {
-		systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
-		// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
-		return systemErrorResp
-	}
+	// var batchID SendGridBatchIDResponse
+	// sendGridUnmarshalErr := json.Unmarshal([]byte(sendgridBatchIdRequest.Body), &batchID)
+	// fmt.Print("bla")
+	// if sendGridUnmarshalErr != nil {
+	// 	systemErrorResp.Body = sendGridUnmarshalErr.Error() + "\n" + sendgridBatchIdResponse.Body + "\n" + fmt.Sprintf("%v", batchID)
+	// 	// log.Fatalf("Could not unmarshal SendGrid batch ID response: %s", sendGridUnmarshalErr)
+	// 	return systemErrorResp
+	// }
 
 	sendClient := sendgrid.NewSendClient(sendgridApiKey)
 	for _, subscriber := range subscribers {
@@ -160,7 +159,7 @@ func Main(ctx context.Context, event Event) Response {
 		personalization.SetDynamicTemplateData("unsubscribe", fmt.Sprintf("https://theprophetofdog.com/api/mailing-list/unsubscribe?id=%s", subscriber.ID))
 
 		sendgridMail.Personalizations = append(sendgridMail.Personalizations, personalization)
-		sendgridMail.BatchID = batchID.BatchID
+		// sendgridMail.BatchID = batchID.BatchID
 
 		response, err := sendClient.Send(sendgridMail)
 		log.Println(response)
