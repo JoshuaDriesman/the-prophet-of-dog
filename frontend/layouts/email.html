@@ -1,0 +1,17 @@
+{{ define "styles" }}
+    {{ $.Scratch.Set "style_opts" (dict "src" "scss/pages/about.scss" "dest" "css/about.css") }}
+{{ end }}
+
+{{ define "email" }}
+
+<div class="splash-container">
+  <div class="splash">
+    <h1>Sign up for email updates</h1>
+    <form>
+        <label>Name</label><input type="text" required />
+        <label>Email</label><input type="email" required />
+    </form>
+  </div>
+</div>
+
+{{ end }}
